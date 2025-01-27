@@ -121,3 +121,7 @@ function saveHistory(steps, cycling, calories) {
   history.push(newEntry);
   localStorage.setItem("history", JSON.stringify(history));
 }
+document.addEventListener("DOMContentLoaded", () => {
+  loadUserData(); // Load user data from localStorage
+  loadHistory();  // Load activity history
+});
