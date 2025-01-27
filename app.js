@@ -67,21 +67,11 @@ async function togglePower() {
 // Event Listeners
 document.getElementById("connect-btn").addEventListener("click", connectToDevice);
 document.getElementById("toggle-power-btn").addEventListener("click", togglePower);
-// web/app.js
-
-// LocalStorage keys
-const LOCAL_STORAGE_KEYS = {
-  weight: "fitness_weight",
-  height: "fitness_height",
-  age: "fitness_age",
-  history: "fitness_history"
-};
-
 // Load user data from localStorage
 function loadUserData() {
-  const weight = localStorage.getItem(LOCAL_STORAGE_KEYS.weight) || 70;
-  const height = localStorage.getItem(LOCAL_STORAGE_KEYS.height) || 170;
-  const age = localStorage.getItem(LOCAL_STORAGE_KEYS.age) || 25;
+  const weight = localStorage.getItem("weight") || 70;
+  const height = localStorage.getItem("height") || 170;
+  const age = localStorage.getItem("age") || 25;
 
   document.getElementById("weight").value = weight;
   document.getElementById("height").value = height;
@@ -94,29 +84,34 @@ function saveUserData() {
   const height = document.getElementById("height").value;
   const age = document.getElementById("age").value;
 
-  localStorage.setItem(LOCAL_STORAGE_KEYS.weight, weight);
-  localStorage.setItem(LOCAL_STORAGE_KEYS.height, height);
-  localStorage.setItem(LOCAL_STORAGE_KEYS.age, age);
-
-  alert("User data saved successfully!");
+  localStorage.setItem("weight", weight);
+  localStorage.setItem("height", height);
+  localStorage.setItem("age", age);
 }
 
-// Load activity history from localStorage
+// Add event listeners to save data when inputs change
+document.getElementById("weight").addEventListener("change", saveUserData);
+document.getElementById("height").addEventListener("change", saveUserData);
+document.getElementById("age").addEventListener("change", saveUserData);
+
+// Load saved user data on app startup
+loadUserData();
 function loadHistory() {
-  const history = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.history)) || [];
+  const history = JSON.parse(localStorage.getItem("history")) || [];
   const historyList = document.getElementById("history-list");
+
+  // Clear the current list
   historyList.innerHTML = "";
 
-  history.forEach((item) => {
+  // Populate the list with saved history
+  history.forEach((entry) => {
     const listItem = document.createElement("li");
-    listItem.textContent = `${item.date} - Steps: ${item.steps}, Cycling: ${item.cycling} min, Calories: ${item.calories}`;
+    listItem.textContent = `${entry.date} - Steps: ${entry.steps}, Cycling: ${entry.cycling} min, Calories: ${entry.calories}`;
     historyList.appendChild(listItem);
   });
 }
-
-// Save activity history to localStorage
 function saveHistory(steps, cycling, calories) {
-  const history = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.history)) || [];
+  const history = JSON.parse(localStorage.getItem("history")) || [];
   const newEntry = {
     date: new Date().toLocaleDateString(),
     steps,
@@ -124,32 +119,5 @@ function saveHistory(steps, cycling, calories) {
     calories
   };
   history.push(newEntry);
-  localStorage.setItem(LOCAL_STORAGE_KEYS.history, JSON.stringify(history));
-}
-
-// Event Listeners for saving user data
-document.getElementById("weight").addEventListener("change", saveUserData);
-document.getElementById("height").addEventListener("change", saveUserData);
-document.getElementById("age").addEventListener("change", saveUserData);
-
-// Call on page load
-loadUserData();
-loadHistory();
-
-// Save activity data when new data is read
-async function startReadingData() {
-  setInterval(async () => {
-    const steps = await readCharacteristic(characteristics.steps);
-    const calories = await readCharacteristic(characteristics.calories);
-    const cycling = await readCharacteristic(characteristics.cycling);
-    const battery = await readCharacteristic(characteristics.battery);
-
-    document.getElementById("steps-count").innerText = steps;
-    document.getElementById("calories").innerText = calories;
-    document.getElementById("cycling-time").innerText = cycling;
-    document.getElementById("battery").innerText = `${battery}%`;
-
-    // Save history (for demo purposes, saving every read)
-    saveHistory(steps, cycling, calories);
-  }, 1000);
+  localStorage.setItem("history", JSON.stringify(history));
 }
