@@ -1,0 +1,47 @@
+<!-- web/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <header>
+    <h1>Fitness Tracker</h1>
+  </header>
+
+  <main>
+    <section id="device-section">
+      <button id="connect-btn">Connect to Device</button>
+      <div id="device-status" hidden>
+        <p><strong>Steps:</strong> <span id="steps-count">0</span></p>
+        <p><strong>Cycling Time:</strong> <span id="cycling-time">0</span> min</p>
+        <p><strong>Calories Burned:</strong> <span id="calories">0</span> kcal</p>
+        <p><strong>Battery:</strong> <span id="battery">100%</span></p>
+        <button id="toggle-power-btn">Turn Off Device</button>
+      </div>
+    </section>
+
+    <section id="user-data">
+      <h2>User Data</h2>
+      <label for="weight">Weight (kg):</label>
+      <input type="number" id="weight" value="70">
+      <label for="height">Height (cm):</label>
+      <input type="number" id="height" value="170">
+      <label for="age">Age:</label>
+      <input type="number" id="age" value="25">
+    </section>
+
+    <section id="history">
+      <h2>Activity History</h2>
+      <ul id="history-list">
+        <!-- Saved activities will appear here -->
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
