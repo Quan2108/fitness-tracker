@@ -1,4 +1,4 @@
-// web/sw.js
+// sw.js
 const CACHE_NAME = "fitness-tracker-cache-v1";
 const FILES_TO_CACHE = [
   "./",
@@ -26,17 +26,6 @@ self.addEventListener("activate", (event) => {
       return Promise.all(
         cacheNames
           .filter((cacheName) => cacheName !== CACHE_NAME)
-          .map((cacheName) => caches.delete(cacheName))
-      );
-    })
-  );
-});
-
-// Fetch files from cache or network
-self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
-});
+         
+::contentReference[oaicite:0]{index=0}
+ 
