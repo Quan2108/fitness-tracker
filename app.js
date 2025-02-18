@@ -1,14 +1,12 @@
-// web/app.js
-
 let device, server, fitnessService, characteristics = {};
 
 // Bluetooth service and characteristic UUIDs
-const SERVICE_UUID = "180D";
-const STEPS_UUID = "2A53";
-const CALORIES_UUID = "2A99";
-const CYCLING_UUID = "2A5B";
-const BATTERY_UUID = "2A19";
-const CONTROL_UUID = "2A9F";
+const SERVICE_UUID = "180D"; // Replace with your device's service UUID
+const STEPS_UUID = "2A53";   // Replace with your device's steps characteristic UUID
+const DISTANCE_UUID = "2A5B"; // Replace with your device's distance characteristic UUID
+const CALORIES_UUID = "2A99"; // Replace with your device's calories characteristic UUID
+const BATTERY_UUID = "2A19";  // Replace with your device's battery characteristic UUID
+const CONTROL_UUID = "2A9F";  // Replace with your device's control characteristic UUID
 
 // Connect to the BLE device
 async function connectToDevice() {
@@ -23,8 +21,8 @@ async function connectToDevice() {
 
     // Get characteristics
     characteristics.steps = await fitnessService.getCharacteristic(STEPS_UUID);
+    characteristics.distance = await fitnessService.getCharacteristic(DISTANCE_UUID);
     characteristics.calories = await fitnessService.getCharacteristic(CALORIES_UUID);
-    characteristics.cycling = await fitnessService.getCharacteristic(CYCLING_UUID);
     characteristics.battery = await fitnessService.getCharacteristic(BATTERY_UUID);
     characteristics.control = await fitnessService.getCharacteristic(CONTROL_UUID);
 
@@ -39,13 +37,13 @@ async function connectToDevice() {
 async function startReadingData() {
   setInterval(async () => {
     const steps = await readCharacteristic(characteristics.steps);
+    const distance = await readCharacteristic(characteristics.distance);
     const calories = await readCharacteristic(characteristics.calories);
-    const cycling = await readCharacteristic(characteristics.cycling);
     const battery = await readCharacteristic(characteristics.battery);
 
     document.getElementById("steps-count").innerText = steps;
+    document.getElementById("distance").innerText = `${(distance / 1000).toFixed(2)} km`;
     document.getElementById("calories").innerText = calories;
-    document.getElementById("cycling-time").innerText = cycling;
     document.getElementById("battery").innerText = `${battery}%`;
   }, 1000);
 }
@@ -67,61 +65,3 @@ async function togglePower() {
 // Event Listeners
 document.getElementById("connect-btn").addEventListener("click", connectToDevice);
 document.getElementById("toggle-power-btn").addEventListener("click", togglePower);
-// Load user data from localStorage
-function loadUserData() {
-  const weight = localStorage.getItem("weight") || 70;
-  const height = localStorage.getItem("height") || 170;
-  const age = localStorage.getItem("age") || 25;
-
-  document.getElementById("weight").value = weight;
-  document.getElementById("height").value = height;
-  document.getElementById("age").value = age;
-}
-
-// Save user data to localStorage
-function saveUserData() {
-  const weight = document.getElementById("weight").value;
-  const height = document.getElementById("height").value;
-  const age = document.getElementById("age").value;
-
-  localStorage.setItem("weight", weight);
-  localStorage.setItem("height", height);
-  localStorage.setItem("age", age);
-}
-
-// Add event listeners to save data when inputs change
-document.getElementById("weight").addEventListener("change", saveUserData);
-document.getElementById("height").addEventListener("change", saveUserData);
-document.getElementById("age").addEventListener("change", saveUserData);
-
-// Load saved user data on app startup
-loadUserData();
-function loadHistory() {
-  const history = JSON.parse(localStorage.getItem("history")) || [];
-  const historyList = document.getElementById("history-list");
-
-  // Clear the current list
-  historyList.innerHTML = "";
-
-  // Populate the list with saved history
-  history.forEach((entry) => {
-    const listItem = document.createElement("li");
-    listItem.textContent = `${entry.date} - Steps: ${entry.steps}, Cycling: ${entry.cycling} min, Calories: ${entry.calories}`;
-    historyList.appendChild(listItem);
-  });
-}
-function saveHistory(steps, cycling, calories) {
-  const history = JSON.parse(localStorage.getItem("history")) || [];
-  const newEntry = {
-    date: new Date().toLocaleDateString(),
-    steps,
-    cycling,
-    calories
-  };
-  history.push(newEntry);
-  localStorage.setItem("history", JSON.stringify(history));
-}
-document.addEventListener("DOMContentLoaded", () => {
-  loadUserData(); // Load user data from localStorage
-  loadHistory();  // Load activity history
-});
